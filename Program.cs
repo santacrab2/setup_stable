@@ -23,9 +23,9 @@ class Program
     static string? pluginsRelease = string.Empty;
     static async Task Main(string[] args)
     {
-        Console.WriteLine("Type the version you would like to download 'Stable' or 'BleedingEdge'");
+        Console.WriteLine("Press Enter for Stable. Type 'dev' for development build.");
         var choice = Console.ReadLine();
-        if (choice == "BleedingEdge")
+        if (choice == "dev")
             await DownloadBleedingEdge();
         else
             await DownloadStable();
