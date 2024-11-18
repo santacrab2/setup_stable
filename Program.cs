@@ -123,49 +123,57 @@ class Program
         }
         using (var client = new HttpClient(new HttpClientHandler { UseCookies = true }))
         {
-            // Download PKHeX-Plugins.zip
-            Console.WriteLine($"Downloading latest PKHeX-Plugin Release: {pluginsRelease}");
-            string downloadPluginUrl = $"https://github.com/{pluginsRepo}/releases/download/{pluginsRelease}/{pluginsFile}";
-
-            var pluginResponse = await client.GetAsync(downloadPluginUrl);
-            pluginResponse.EnsureSuccessStatusCode();
-
-            using (var pluginFileStream = new FileStream(pluginsFile, FileMode.Create))
+            try
             {
-                await pluginResponse.Content.CopyToAsync(pluginFileStream);
+                // Download PKHeX-Plugins.zip
+                Console.WriteLine($"Downloading latest PKHeX-Plugin Release: {pluginsRelease}");
+                string downloadPluginUrl = $"https://github.com/{pluginsRepo}/releases/download/{pluginsRelease}/{pluginsFile}";
+
+                var pluginResponse = await client.GetAsync(downloadPluginUrl);
+                pluginResponse.EnsureSuccessStatusCode();
+
+                using (var pluginFileStream = new FileStream(pluginsFile, FileMode.Create))
+                {
+                    await pluginResponse.Content.CopyToAsync(pluginFileStream);
+                }
+
+                Console.WriteLine("PKHeX-Plugins downloaded successfully as PKHeX-Plugins.zip.");
+
+                // Cleanup old files if they exist
+                Console.WriteLine("Cleaning up previous releases if they exist ...");
+                CleanupOldFiles();
+
+                // Extract PKHeX
+                Console.WriteLine("Extracting PKHeX ...");
+                ZipFile.ExtractToDirectory("PKHeX.zip", Directory.GetCurrentDirectory());
+
+                // Delete PKHeX.zip
+                Console.WriteLine("Deleting PKHeX.zip ...");
+                File.Delete("PKHeX.zip");
+
+                // Unblock Plugins and Extract
+                Console.WriteLine("Unblocking and extracting PKHeX-Plugins ...");
+                UnblockFile(pluginsFile);
+
+                if (!Directory.Exists("plugins"))
+                {
+                    Directory.CreateDirectory("plugins");
+                }
+
+                ZipFile.ExtractToDirectory(pluginsFile, "plugins");
+
+                // Delete PKHeX-Plugins.zip
+                Console.WriteLine("Deleting PKHeX-Plugins.zip ...");
+                File.Delete(pluginsFile);
+
+                Console.WriteLine("PKHeX and Plugins setup completed.");
+                return true;
             }
-
-            Console.WriteLine("PKHeX-Plugins downloaded successfully as PKHeX-Plugins.zip.");
-
-            // Cleanup old files if they exist
-            Console.WriteLine("Cleaning up previous releases if they exist ...");
-            CleanupOldFiles();
-
-            // Extract PKHeX
-            Console.WriteLine("Extracting PKHeX ...");
-            ZipFile.ExtractToDirectory("PKHeX.zip", Directory.GetCurrentDirectory());
-
-            // Delete PKHeX.zip
-            Console.WriteLine("Deleting PKHeX.zip ...");
-            File.Delete("PKHeX.zip");
-
-            // Unblock Plugins and Extract
-            Console.WriteLine("Unblocking and extracting PKHeX-Plugins ...");
-            UnblockFile(pluginsFile);
-
-            if (!Directory.Exists("plugins"))
+            catch (Exception ex)
             {
-                Directory.CreateDirectory("plugins");
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
             }
-
-            ZipFile.ExtractToDirectory(pluginsFile, "plugins");
-
-            // Delete PKHeX-Plugins.zip
-            Console.WriteLine("Deleting PKHeX-Plugins.zip ...");
-            File.Delete(pluginsFile);
-
-            Console.WriteLine("PKHeX and Plugins setup completed.");
-            return true;
         }
     }
     private async static Task<bool> DownloadBleedingEdge()
@@ -196,8 +204,10 @@ class Program
         // Determine the latest stable plugin release
         using (var client = new HttpClient(new HttpClientHandler { UseCookies = true }))
         {
-            // Set user-agent header for GitHub API request
-            client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; PKHeXDownloader)");
+            try
+            {
+                // Set user-agent header for GitHub API request
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; PKHeXDownloader)");
 
                 Console.WriteLine("Determining latest plugin release ...");
 
@@ -245,53 +255,66 @@ class Program
                 }
 
                 Console.WriteLine("PKHeX downloaded successfully as PKHeX.zip.");
-         
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
+            }
         }
         using (var client = new HttpClient(new HttpClientHandler { UseCookies = true }))
         {
-            // Download PKHeX-Plugins.zip
-            Console.WriteLine($"Downloading latest PKHeX-Plugin Release: {pluginsRelease}");
-
-            var pluginResponse = await client.GetAsync(releasesUrl);
-            pluginResponse.EnsureSuccessStatusCode();
-
-            using (var pluginFileStream = new FileStream(pluginsFile, FileMode.Create))
+            try
             {
-                await pluginResponse.Content.CopyToAsync(pluginFileStream);
+                // Download PKHeX-Plugins.zip
+                Console.WriteLine($"Downloading latest PKHeX-Plugin Release: {pluginsRelease}");
+
+                var pluginResponse = await client.GetAsync(releasesUrl);
+                pluginResponse.EnsureSuccessStatusCode();
+
+                using (var pluginFileStream = new FileStream(pluginsFile, FileMode.Create))
+                {
+                    await pluginResponse.Content.CopyToAsync(pluginFileStream);
+                }
+
+                Console.WriteLine("PKHeX-Plugins downloaded successfully as PKHeX-Plugins.zip.");
+
+                // Cleanup old files if they exist
+                Console.WriteLine("Cleaning up previous releases if they exist ...");
+                CleanupOldFiles();
+
+                // Extract PKHeX
+                Console.WriteLine("Extracting PKHeX ...");
+                ZipFile.ExtractToDirectory("PKHeX.zip", Directory.GetCurrentDirectory(), true);
+
+                // Delete PKHeX.zip
+                Console.WriteLine("Deleting PKHeX.zip ...");
+                File.Delete("PKHeX.zip");
+
+                // Unblock Plugins and Extract
+                Console.WriteLine("Unblocking and extracting PKHeX-Plugins ...");
+                UnblockFile(pluginsFile);
+
+                if (!Directory.Exists("plugins"))
+                {
+                    Directory.CreateDirectory("plugins");
+                }
+
+                ZipFile.ExtractToDirectory(pluginsFile, "plugins", true);
+                File.Move("plugins/PKHeX-Plugins/AutoModPlugins.dll", "plugins/AutoModPlugins.dll");
+
+                // Delete PKHeX-Plugins.zip and folder
+                Console.WriteLine("Deleting PKHeX-Plugins.zip ...");
+                File.Delete(pluginsFile);
+                Directory.Delete("plugins/PKHeX-Plugins");
+                Console.WriteLine("PKHeX and Plugins setup completed.");
+                return true;
             }
-
-            Console.WriteLine("PKHeX-Plugins downloaded successfully as PKHeX-Plugins.zip.");
-
-            // Cleanup old files if they exist
-            Console.WriteLine("Cleaning up previous releases if they exist ...");
-            CleanupOldFiles();
-
-            // Extract PKHeX
-            Console.WriteLine("Extracting PKHeX ...");
-            ZipFile.ExtractToDirectory("PKHeX.zip", Directory.GetCurrentDirectory(),true);
-
-            // Delete PKHeX.zip
-            Console.WriteLine("Deleting PKHeX.zip ...");
-            File.Delete("PKHeX.zip");
-
-            // Unblock Plugins and Extract
-            Console.WriteLine("Unblocking and extracting PKHeX-Plugins ...");
-            UnblockFile(pluginsFile);
-
-            if (!Directory.Exists("plugins"))
+            catch (Exception ex)
             {
-                Directory.CreateDirectory("plugins");
+                Console.WriteLine($"Error: {ex.Message}");
+                return false;
             }
-
-            ZipFile.ExtractToDirectory(pluginsFile, "plugins",true);
-            File.Move("plugins/PKHeX-Plugins/AutoModPlugins.dll", "plugins/AutoModPlugins.dll");
-
-            // Delete PKHeX-Plugins.zip and folder
-            Console.WriteLine("Deleting PKHeX-Plugins.zip ...");
-            File.Delete(pluginsFile);
-            Directory.Delete("plugins/PKHeX-Plugins");
-            Console.WriteLine("PKHeX and Plugins setup completed.");
-            return true;
         }
     }
     private static void CleanupOldFiles()
