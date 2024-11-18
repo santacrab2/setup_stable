@@ -82,7 +82,6 @@ class Program
 
                 // Step 1: Load the HTML content
                 var response = await client.GetStringAsync(basePKHeXUrl);
-                Console.WriteLine("Page content fetched. Debugging HTML:");
 
                 // Step 2: Load HTML into HtmlAgilityPack
                 var document = new HtmlDocument();
@@ -103,8 +102,6 @@ class Program
                 {
                     downloadUrl = $"https://projectpokemon.org{downloadUrl}";
                 }
-
-                Console.WriteLine($"Download link obtained: {downloadUrl}");
 
                 // Step 4: Download the file
                 Console.WriteLine("Downloading PKHeX...");
@@ -216,7 +213,6 @@ class Program
 
                 // Step 1: Load the HTML content
                 var response = await client.GetStringAsync(basePKHeXUrl);
-                Console.WriteLine("Page content fetched. Debugging HTML:");
 
                 // Step 2: Load HTML into HtmlAgilityPack
                 var document = new HtmlDocument();
@@ -237,8 +233,6 @@ class Program
                 {
                     downloadUrl = $"https://projectpokemon.org{downloadUrl}";
                 }
-
-                Console.WriteLine($"Download link obtained: {downloadUrl}");
 
                 // Step 4: Download the file
                 Console.WriteLine("Downloading PKHeX...");
