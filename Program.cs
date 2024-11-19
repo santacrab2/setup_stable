@@ -13,10 +13,8 @@ class Program
 { // Check for network path locations
     static string[] networkPaths = { "OneDrive", "Dropbox", "Mega" };
     static string currentPath = Directory.GetCurrentDirectory();
-    static string pluginsRepo = "santacrab2/PKHeX-Plugins";
-    static string baseRepo = "kwsch/PKHeX";
-    static string releasesUrl = $"https://api.github.com/repos/{pluginsRepo}/releases";
-    static string baseReleasesUrl = $"https://api.github.com/repos/{baseRepo}/releases";
+    static string pluginreleasesUrl = $"https://api.github.com/repos/santacrab2/PKHeX-Plugins/releases";
+    static string basePKHeXReleasesUrl = $"https://api.github.com/repos/kwsch/PKHeX/releases";
     static string basePKHeXUrl = "https://projectpokemon.org/home/files/file/1-pkhex/";
     static string downloadUrl = string.Empty;
     static string pluginsFile = "PKHeX-Plugins.zip";
@@ -66,8 +64,8 @@ class Program
             {
                 Console.WriteLine("Determining latest plugin release ...");
 
-                var pluginsResponse = await client.GetStringAsync(releasesUrl);
-                var baseResponse = await client.GetStringAsync(baseReleasesUrl);
+                var pluginsResponse = await client.GetStringAsync(pluginreleasesUrl);
+                var baseResponse = await client.GetStringAsync(basePKHeXReleasesUrl);
 
                 pluginsRelease = JsonDocument.Parse(pluginsResponse).RootElement[0].GetProperty("tag_name").GetString();
                 var baseRelease = JsonDocument.Parse(baseResponse).RootElement[0].GetProperty("tag_name").GetString();
@@ -116,20 +114,9 @@ class Program
                 }
 
                 Console.WriteLine("PKHeX downloaded successfully as PKHeX.zip.");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error: {ex.Message}");
-                return false;
-            }
-        }
-        using (var client = new HttpClient(new HttpClientHandler { UseCookies = true }))
-        {
-            try
-            {
                 // Download PKHeX-Plugins.zip
                 Console.WriteLine($"Downloading latest PKHeX-Plugin Release: {pluginsRelease}");
-                string downloadPluginUrl = $"https://github.com/{pluginsRepo}/releases/download/{pluginsRelease}/{pluginsFile}";
+                string downloadPluginUrl = $"https://github.com/santacrab2/PKHeX-Plugins/releases/download/{pluginsRelease}/{pluginsFile}";
 
                 var pluginResponse = await client.GetAsync(downloadPluginUrl);
                 pluginResponse.EnsureSuccessStatusCode();
@@ -147,7 +134,7 @@ class Program
 
                 // Extract PKHeX
                 Console.WriteLine("Extracting PKHeX ...");
-                ZipFile.ExtractToDirectory("PKHeX.zip", Directory.GetCurrentDirectory(),true);
+                ZipFile.ExtractToDirectory("PKHeX.zip", Directory.GetCurrentDirectory(), true);
 
                 // Delete PKHeX.zip
                 Console.WriteLine("Deleting PKHeX.zip ...");
@@ -162,7 +149,7 @@ class Program
                     Directory.CreateDirectory("plugins");
                 }
 
-                ZipFile.ExtractToDirectory(pluginsFile, "plugins",true);
+                ZipFile.ExtractToDirectory(pluginsFile, "plugins", true);
 
                 // Delete PKHeX-Plugins.zip
                 Console.WriteLine("Deleting PKHeX-Plugins.zip ...");
@@ -177,6 +164,7 @@ class Program
                 return false;
             }
         }
+        
     }
     private async static Task<bool> DownloadBleedingEdge()
     {
@@ -214,13 +202,13 @@ class Program
                 Console.WriteLine("Determining latest plugin release ...");
 
                 var pluginsResponse = await client.GetStringAsync(basePluginURL);
-                var baseResponse = await client.GetStringAsync(baseReleasesUrl);
+                var baseResponse = await client.GetStringAsync(basePKHeXReleasesUrl);
 
                 var jsonResponse = JsonDocument.Parse(pluginsResponse);
                 var buildId = jsonResponse.RootElement.GetProperty("value")[0].GetProperty("id").ToString();
                 var artifactResponse = await client.GetStringAsync($"https://dev.azure.com/santacrab2/6b94199c-1e18-4ecc-9df5-7957a6984c60/_apis/build/builds/{buildId}/artifacts?artifactName=PKHeX-Plugins&api-version=6.0");
                 var artifactJsonResponse = JsonDocument.Parse(artifactResponse);
-                releasesUrl = artifactJsonResponse.RootElement.GetProperty("resource").GetProperty("downloadUrl").ToString();
+                pluginreleasesUrl = artifactJsonResponse.RootElement.GetProperty("resource").GetProperty("downloadUrl").ToString();
                 Console.WriteLine("Fetching the correct download page for PKHeX...");
 
                 // Step 1: Load the HTML content
@@ -271,7 +259,7 @@ class Program
                 // Download PKHeX-Plugins.zip
                 Console.WriteLine($"Downloading latest PKHeX-Plugin Release: {pluginsRelease}");
 
-                var pluginResponse = await client.GetAsync(releasesUrl);
+                var pluginResponse = await client.GetAsync(pluginreleasesUrl);
                 pluginResponse.EnsureSuccessStatusCode();
 
                 using (var pluginFileStream = new FileStream(pluginsFile, FileMode.Create))
