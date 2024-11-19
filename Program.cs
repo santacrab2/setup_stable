@@ -29,6 +29,8 @@ class Program
             await DownloadBleedingEdge();
         else
             await DownloadStable();
+        Console.WriteLine("Press Enter to Exit.");
+        Console.ReadLine();
     }
     private async static Task<bool> DownloadStable()
     {
