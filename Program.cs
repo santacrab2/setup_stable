@@ -145,7 +145,7 @@ class Program
 
                 // Extract PKHeX
                 Console.WriteLine("Extracting PKHeX ...");
-                ZipFile.ExtractToDirectory("PKHeX.zip", Directory.GetCurrentDirectory());
+                ZipFile.ExtractToDirectory("PKHeX.zip", Directory.GetCurrentDirectory(),true);
 
                 // Delete PKHeX.zip
                 Console.WriteLine("Deleting PKHeX.zip ...");
@@ -160,7 +160,7 @@ class Program
                     Directory.CreateDirectory("plugins");
                 }
 
-                ZipFile.ExtractToDirectory(pluginsFile, "plugins");
+                ZipFile.ExtractToDirectory(pluginsFile, "plugins",true);
 
                 // Delete PKHeX-Plugins.zip
                 Console.WriteLine("Deleting PKHeX-Plugins.zip ...");
