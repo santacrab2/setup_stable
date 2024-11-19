@@ -26,7 +26,7 @@ class Program
     }
     private async static Task<bool> DownloadStable()
     {
-        Console.WriteLine("PKHeX and PKHeX-Plugins downloader (stable releases)");
+        Console.WriteLine(mode == "dev"? "PKHeX and PKHeX-Plugins downloader (development builds)":"PKHeX and PKHeX-Plugins downloader (stable releases)");
         Console.WriteLine("Please report any issues with this setup file via GitHub issues at https://github.com/santacrab2/PKHeX-Plugins/issues");
         Console.WriteLine();
 
