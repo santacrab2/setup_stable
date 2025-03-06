@@ -53,3 +53,8 @@ jobs:
         name: setup_stable
         path:  |
           D:\a\setup_stable\setup_stable\bin\Release\net9.0\
+          !D:\a\setup_stable\setup_stable\bin\Release\net9.0\HtmlAgilityPack.dll
+          !D:\a\setup_stable\setup_stable\bin\Release\net9.0\setup_stable.deps.json
+          !D:\a\setup_stable\setup_stable\bin\Release\net9.0\setup_stable.dll
+          !D:\a\setup_stable\setup_stable\bin\Release\net9.0\setup_stable.pdb
+          !D:\a\setup_stable\setup_stable\bin\Release\net9.0\setup_stable.runtimeconfig.json
