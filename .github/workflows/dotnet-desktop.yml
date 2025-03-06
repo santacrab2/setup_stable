@@ -51,4 +51,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: setup_stable
-        path:  setup_stable/setup_stable/bin/Release/net9.0/
+        path:  |
+          D:\a\setup_stable\setup_stable\bin\Release\net9.0\
